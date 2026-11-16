@@ -9,8 +9,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 
 
-def create_app(database=None):
-    app = FastAPI(title="Flight Risk Analytics", version="0.2.0")
+def create_app(database=None, predictions=None, results_dir=None):
+    app = FastAPI(title="Flight Risk Analytics", version="0.3.0")
     path = Path(database or os.environ.get("FLIGHT_DB", "artifacts/flight.sqlite"))
 
     @lru_cache(maxsize=2)
@@ -123,6 +123,8 @@ def create_app(database=None):
             rows = db.execute(f"SELECT {dimension} AS name, {sums} FROM aggregates" + where + f" GROUP BY {dimension} ORDER BY {dimension}", values).fetchall()
         return {"dimension": dimension, "data": [metrics(row) for row in rows]}
 
+    from backend.ml_api import router
+    app.include_router(router(predictions or os.environ.get("FLIGHT_PREDICTIONS", "artifacts/predictions.sqlite"), results_dir or "results/m3"))
     build = Path(__file__).resolve().parents[1] / "frontend" / "dist"
     if build.is_dir():
         app.mount("/", StaticFiles(directory=build, html=True), name="frontend")

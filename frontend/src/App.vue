@@ -1,7 +1,10 @@
 <script setup>
-import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import echarts from './charts.js'
 import Chart from './Chart.vue'
+const RiskPage=defineAsyncComponent(()=>import('./RiskPage.vue'))
+const ExperimentsPage=defineAsyncComponent(()=>import('./ExperimentsPage.vue'))
+const titles={overview:['航空运行驾驶舱','从机场、航司与时间维度，观察航班运行规律。'],routes:['航线与时段探索','选择机场与计划出发时段，探索历史航线的风险差异。'],risk:['延误风险与历史复盘','查看已评分的真实航班，比较风险判断与实际结果。'],experiments:['实验与系统验证','追溯数据、模型对比与大数据工程实验。']}
 
 const page = ref('overview'), month = ref(''), carrier = ref(''), origin = ref(''), dest = ref(''), hour = ref('')
 const choices = ref({ month: [], carrier: [], origin: [], dest: [] }), airports = ref({}), data = ref(null)
@@ -24,7 +27,7 @@ async function json(url, signal) {
   return response.json()
 }
 async function load() {
-  if (!ready.value) return
+  if (!ready.value || !['overview','routes'].includes(page.value)) return
   controller?.abort(); controller = new AbortController()
   const current = controller
   busy.value = true; error.value = ''
@@ -73,7 +76,7 @@ const ranking = computed(() => {
 const heat = computed(() => ({ ...base, grid: { left: 42, right: 20, top: 14, bottom: 54 }, tooltip: { ...base.tooltip, trigger: 'item', formatter: p => `${['一', '二', '三', '四', '五', '六', '日'][p.value[1]]} · ${p.value[0]}时<br/>延误率 ${p.value[2].toFixed(1)}% · ${num(p.value[3])} 个有效到达` }, xAxis: { type: 'category', data: Array.from({ length: 24 }, (_, i) => i), axisLabel: { interval: 2, color: '#9aaec8' }, axisLine: { show: false }, axisTick: { show: false }, splitArea: { show: true, areaStyle: { color: '#142035' } } }, yAxis: { type: 'category', data: ['一', '二', '三', '四', '五', '六', '日'], axisLabel: { color: '#9aaec8' }, axisLine: { show: false }, axisTick: { show: false } }, visualMap: { dimension: 2, min: 0, max: 50, calculable: false, orient: 'horizontal', left: 'center', bottom: 0, itemHeight: 110, itemWidth: 8, text: ['≥50%', '0%'], textStyle: { color: '#9aaec8', fontSize: 10 }, inRange: { color: ['#133a52', '#287d9a', '#51c2d7', '#f6b44d'] } }, series: [{ type: 'heatmap', data: (data.value?.heatmap || []).filter(r => r.dep_hour != null && r.delay_rate != null).map(r => [r.dep_hour, r.weekday - 1, r.delay_rate * 100, r.eligible]), itemStyle: { borderColor: '#101a2a', borderWidth: 3 }, emphasis: { itemStyle: { borderColor: '#edf4ff', borderWidth: 1 } } }] }))
 const hours = computed(() => ({ ...base, xAxis: { ...axis, type: 'category', data: (data.value?.hours || []).map(r => r.dep_hour ?? '未知') }, yAxis: { ...axis, type: 'value' }, series: [{ type: 'bar', barMaxWidth: 12, itemStyle: { color: '#38cfe8', opacity: .8, borderRadius: [3, 3, 0, 0] }, data: (data.value?.hours || []).map(r => r.planned) }] }))
 const mapOption = computed(() => {
-  let points = (data.value?.airports || []).filter(r => !outlying(r.origin)).map(r => ({ name: r.origin, value: [airports.value[r.origin].lon, airports.value[r.origin].lat, r.delay_rate == null ? -1 : (r.delay_rate == null ? -1 : r.delay_rate * 100), r.planned], itemStyle: { color: colour(r.delay_rate) } }))
+  let points = (data.value?.airports || []).filter(r => !outlying(r.origin)).map(r => ({ name: r.origin, value: [airports.value[r.origin].lon, airports.value[r.origin].lat, r.delay_rate == null ? -1 : r.delay_rate * 100, r.planned], itemStyle: { color: colour(r.delay_rate) } }))
   const routes = (data.value?.routes || []).filter(r => !outlying(r.origin) && !outlying(r.dest))
   if (page.value === 'routes') {
     const seen = new Set(points.map(r => r.name))
@@ -90,22 +93,22 @@ function mapClick(p) { if (p.seriesType === 'scatter') { if (page.value === 'rou
     <aside class="sidebar">
       <a class="brand" href="#" @click.prevent="changePage('overview')"><span class="brand-mark">↗</span><span>AEROLENS<small>航空运行分析</small></span></a>
       <div class="nav-label">分析工作台</div>
-      <nav aria-label="分析页面"><button :class="{selected:page==='overview'}" @click="changePage('overview')"><span>◫</span>运行驾驶舱</button><button :class="{selected:page==='routes'}" @click="changePage('routes')"><span>⌁</span>航线与时段</button></nav>
+      <nav aria-label="分析页面"><button :class="{selected:page==='overview'}" @click="changePage('overview')"><svg class="nav-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 10h18M10 10v11"/></svg>运行驾驶舱</button><button :class="{selected:page==='routes'}" @click="changePage('routes')"><svg class="nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 18l7-12 9 12M4 18h16"/><circle cx="4" cy="18" r="2"/><circle cx="11" cy="6" r="2"/><circle cx="20" cy="18" r="2"/></svg>航线与时段</button><button :class="{selected:page==='risk'}" @click="changePage('risk')"><svg class="nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v4m9 5h-4"/></svg>风险复盘</button><button :class="{selected:page==='experiments'}" @click="changePage('experiments')"><svg class="nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 21V3m0 18h17M9 17v-6m5 6V6m5 11V9"/></svg>实验验证</button></nav>
       <div class="sidebar-note"><span class="status-dot"></span> 官方历史数据<small>BTS · Reporting Carrier<br>2024 年上半年</small></div>
-      <div class="sidebar-bottom">课程项目 / M2<small>风险复盘与实验验证<br>将在模型实验后接入</small></div>
+      <div class="sidebar-bottom">课程项目 / M4<small>真实数据 · 历史回测<br>可复现的批处理流程</small></div>
     </aside>
     <main>
-      <header class="page-header"><div><div class="eyebrow">FLIGHT OPERATIONS INTELLIGENCE</div><h1>{{page==='overview'?'航空运行驾驶舱':'航线与时段探索'}}</h1><p>{{page==='overview'?'从机场、航司与时间维度，观察航班运行规律。':'选择机场与计划出发时段，探索历史航线的风险差异。'}}</p></div><div class="archive-tag"><span class="status-dot"></span>历史档案分析<small>非实时航班跟踪</small></div></header>
-      <section class="filter-bar" aria-label="数据筛选">
+      <header class="page-header"><div><div class="eyebrow">FLIGHT OPERATIONS INTELLIGENCE</div><h1>{{titles[page][0]}}</h1><p>{{titles[page][1]}}</p></div><div class="archive-tag"><span class="status-dot"></span>历史档案分析<small>非实时航班跟踪</small></div></header>
+      <section v-if="['overview','routes'].includes(page)" class="filter-bar" aria-label="数据筛选">
         <label>月份<select v-model="month"><option value="">全部月份</option><option v-for="v in choices.month" :key="v" :value="v">{{v}}</option></select></label>
         <label>航空公司<select v-model="carrier"><option value="">全部航司</option><option v-for="v in choices.carrier" :key="v">{{v}}</option></select></label>
         <label>出发机场<select v-model="origin"><option value="">全部机场</option><option v-for="v in choices.origin" :key="v" :value="v">{{v}} · {{airportName(v)}}</option></select></label>
         <label v-if="page==='routes'">到达机场<select v-model="dest"><option value="">全部目的地</option><option v-for="v in choices.dest" :key="v" :value="v">{{v}} · {{airportName(v)}}</option></select></label>
         <button class="reset" @click="reset" :disabled="!active">重置筛选 ↺</button><span class="filter-hint">{{scope}}<br><strong>{{num(summary.planned)}} 条计划航班</strong></span>
       </section>
-      <div v-if="error" class="error" role="alert">{{error}} <button @click="retry">重新加载</button></div>
-      <div v-if="busy" class="loading" role="status">正在读取所选范围的真实统计…</div>
-      <div v-if="data" class="content" :class="{pending:busy}">
+      <div v-if="error && ['overview','routes'].includes(page)" class="error" role="alert">{{error}} <button @click="retry">重新加载</button></div>
+      <div v-if="busy && ['overview','routes'].includes(page)" class="loading" role="status">正在读取所选范围的真实统计…</div>
+      <div v-if="data && ['overview','routes'].includes(page)" class="content" :class="{pending:busy}">
         <section class="kpi-grid">
           <article class="kpi"><span>计划航班量</span><strong>{{num(summary.planned)}}<small>班</small></strong><p>当前筛选范围内的计划记录</p></article>
           <article class="kpi"><span>到达延误率 <em>≥15 分钟</em></span><strong class="cyan">{{pct(summary.delay_rate)}}</strong><p>{{num(summary.delayed)}} / {{num(summary.eligible)}} 个有效到达</p></article>
@@ -120,6 +123,7 @@ function mapClick(p) { if (p.seriesType === 'scatter') { if (page.value === 'rou
         <section v-if="offmap.length" class="offmap"><span>主图外机场（含阿拉斯加、夏威夷及属地）</span><button v-for="row in offmap" :key="row.origin" @click="origin=row.origin">{{row.origin}} <b>{{num(row.planned)}}</b> · {{pct(row.delay_rate)}}</button></section>
         <div v-if="summary.planned===0" class="empty">当前组合没有航班记录，请调整筛选条件。比例显示为“—”。</div>
       </div>
+      <RiskPage v-if="page==='risk'"/><ExperimentsPage v-if="page==='experiments'"/>
       <footer><span>来源：BTS Reporting Carrier · 地图：Natural Earth / OurAirports <a href="/maps/sources.json" target="_blank" rel="noreferrer">来源与快照 ↗</a></span><span>历史统计关联不代表因果 · {{elapsed}} ms</span></footer>
     </main>
   </div>

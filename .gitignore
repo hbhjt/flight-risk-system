@@ -27,3 +27,7 @@ logs/
 .vscode/
 Thumbs.db
 .DS_Store
+
+.playwright/
+.playwright-cli/
+output/playwright/

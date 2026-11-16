@@ -1,6 +1,6 @@
 # API 契约
 
-版本0.2。查询使用已发布SQLite的只读内存快照，不在请求中启动Spark。按文件版本更新快照及查询缓存，避免WSL挂载盘随机读取影响交互。
+版本0.3。查询使用已发布SQLite的只读内存快照，不在请求中启动Spark。按文件版本更新快照及查询缓存，避免WSL挂载盘随机读取影响交互。
 
 | GET路径 | 参数 | 输出 |
 | --- | --- | --- |
@@ -15,6 +15,16 @@ month限2024-01至06，origin限三位大写机场码。dimension白名单为mon
 
 data含planned/eligible/delayed/cancelled/diverted/arr_delay_sum/arr_delay_count/delay_rate/cancellation_rate/mean_arrival_delay。日期、机场本地时间语义和分母见数据契约。
 
-P3复盘和P4实验接口将在对应里程碑实现，当前不提供占位预测接口。
+## P3 / P4
+
+| GET路径 | 参数 | 行为 |
+| --- | --- | --- |
+| /api/experiments | 无 | 真实metrics、verification、error_groups及可用的engineering结果 |
+| /api/risk/options | origin、dest、carrier可选 | 从评分库联动查询机场、航司及日期 |
+| /api/risk/flights | origin、dest、carrier、date | 返回最多100条已评分真实航班的身份和计划字段 |
+| /api/risk/flight/{flight_id} | reveal，默认false | 返回四模型分数、验证集阈值及历史支持数；只有reveal=true才返回actual_delayed |
+| /api/risk/examples | 无 | 返回固定20个案例的身份字段，隐藏实际类别 |
+
+flight_id必须是64位十六进制哈希，找不到的ID返回404。date必须是2024年6月的有效日期，格式或范围错误返回422。预测库只读，标签默认不出现在响应中。模型分数属于历史回测，未作独立概率校准。验证产物缺失或未通过时实验接口返回503。
 
 P2已通过dashboard的routes与hours实现。hour为0至23，dest为三位大写机场码。routes按航班数返回前20条。scope包含实际已发布月份与本次筛选。查询无匹配时各图返回空列表，summary比例为null。已构建前端时后端同时提供根路径静态网页。

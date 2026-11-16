@@ -1,0 +1,88 @@
+{
+  "records": 3461319,
+  "repetitions": 3,
+  "runs": [
+    {
+      "round": 1,
+      "format": "csv",
+      "seconds": 2.5290774469999633,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    },
+    {
+      "round": 1,
+      "format": "parquet",
+      "seconds": 0.9609209099999134,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    },
+    {
+      "round": 2,
+      "format": "parquet",
+      "seconds": 0.6900638689999141,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    },
+    {
+      "round": 2,
+      "format": "csv",
+      "seconds": 1.7504203540001981,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    },
+    {
+      "round": 3,
+      "format": "csv",
+      "seconds": 1.7755106049999085,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    },
+    {
+      "round": 3,
+      "format": "parquet",
+      "seconds": 0.7055374520000441,
+      "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+      "groups": 9327,
+      "records": 3461319
+    }
+  ],
+  "storage": {
+    "csv": {
+      "bytes": 65765253,
+      "files": 5
+    },
+    "parquet": {
+      "bytes": 1326202,
+      "files": 5
+    }
+  },
+  "medians": {
+    "csv": 1.7755106049999085,
+    "parquet": 0.7055374520000441
+  },
+  "consistent": true,
+  "result_sha256": "80f0b7f7bc21721c472e6319d0a6ca6bc31954b6fd068eb4fab7fca3c4d924aa",
+  "spark_version": "3.5.8",
+  "master": "spark://127.0.0.1:17077",
+  "application_id": "app-20261116091019-0000",
+  "partitions": 4,
+  "executor_cores": 2,
+  "executor_memory": "1g",
+  "driver_memory": "1g",
+  "columns": [
+    "month",
+    "Reporting_Airline",
+    "Origin",
+    "eligible",
+    "delayed"
+  ],
+  "sql": "GROUP BY month, Reporting_Airline, Origin; count(*), sum(eligible), sum(delayed)",
+  "cache_conditions": "Spark cache cleared each run; OS/HDFS caches not cleared. First observed reads reported, not claimed cold disk reads. Data conversion excluded from query timings.",
+  "scan_bytes": "Not instrumented; storage bytes are not claimed as actual scan bytes.",
+  "artifact_written_at_utc": "2026-11-16T14:10:52.090341+00:00"
+}

@@ -4,7 +4,7 @@
 
 ## 当前进度
 
-方案已定稿：[最终方案](docs/final_plan.md)。六个月3461319条官方记录均已通过HDFS→Spark Standalone→SQLite→API处理与独立数量核对。P1运行驾驶舱和P2航线探索已实现。P3/P4、模型实验与课程材料仍待完成。详见[实施清单](docs/implementation_plan.md)及[M2验收](docs/milestone_m2.md)。
+方案已定稿：[最终方案](docs/final_plan.md)。六个月3461319条官方记录均已通过HDFS→Spark Standalone→SQLite→API处理与独立数量核对。四个页面、B0至B3真实模型实验及CSV/Parquet格式实验均已实现。课程交付材料正在整理。详见[实施清单](docs/implementation_plan.md)及[M2验收](docs/milestone_m2.md)。
 
 ## 环境
 
@@ -68,7 +68,7 @@ bash scripts/run_all_months.sh
 
 ## 交互式网页
 
-前端使用Vue3、Vite、ECharts，Node要求见package.json及Vite支持范围，已在Node24实测。Windows仓库根目录：
+前端使用Vue3、Vite、ECharts，Node要求见package.json及Vite支持范围，已在Node22.14和Node24实测。Windows仓库根目录：
 
 ```powershell
 python -m ingestion.map_assets
@@ -76,7 +76,7 @@ npm.cmd ci --prefix frontend
 npm.cmd run build --prefix frontend
 ```
 
-地图快照已随仓库保存，正常启动无需重新下载。重新生成时同步检查地图许可和sources.json。前端构建后再启动下方后端，即可在[本地工作台](http://localhost:18000/)使用两个页面。地图与字体不依赖外部CDN。
+地图快照已随仓库保存，正常启动无需重新下载。重新生成时同步检查地图许可和sources.json。前端构建后再启动下方后端，即可在[本地工作台](http://localhost:18000/)使用四个页面。地图与字体不依赖外部CDN。
 
 开发调试可另开终端执行`npm.cmd run dev --prefix frontend`，使用15173端口并将/api代理到18000。正式演示使用后端提供的构建版本，只需一个服务。
 
@@ -110,7 +110,7 @@ bash scripts/stop_cluster.sh
 
 ## M3 模型实验
 
-B0至B3已完成，详见[模型验收](docs/milestone_m3.md)和[实验协议](docs/m3_protocol.md)。六月601272条评分保存在artifacts/predictions.sqlite，小型结果在results/m3。P3/P4页面将在M4接入。
+B0至B3已完成，详见[模型验收](docs/milestone_m3.md)和[实验协议](docs/m3_protocol.md)。六月601272条评分保存在artifacts/predictions.sqlite，小型结果在results/m3。P3风险复盘和P4实验验证已接入。
 
 复现时先启动集群，再依次运行：
 
@@ -124,3 +124,15 @@ python scripts/report_m3.py
 ```
 
 formal复用同配置已完成候选；更改实验配置应使用新版本。绘图脚本scripts/plot_m3.py使用Matplotlib，可选输出PNG/SVG，不参与模型训练。
+
+## M4 集成与工程实验
+
+四个页面分别提供全局驾驶舱、航线与时段探索、六月真实航班风险复盘、模型与存储格式实验。P3默认隐藏实际结果，点击后才展开；只支持已评分的六月真实航班，不接受任意虚构航班。P4可切换模型的可靠性图和混淆矩阵。
+
+```bash
+bash scripts/run_benchmark.sh
+```
+
+真实三轮CSV查询中位数1.7755秒，Parquet为0.7055秒。两者均为相同5列、相同3461319行、相同9327组聚合，结果SHA256一致。该实验只清除Spark缓存，未清除操作系统/HDFS缓存，存储字节数也不等于查询扫描字节数。详见[集成验收](docs/milestone_m4.md)、[原始实验记录](results/engineering/benchmark.json)及[API契约](docs/api_contract.md)。
+
+后端无需在线启动Spark即可演示已发布的数据与评分；重新生成数据、训练模型或重跑格式实验时需要启动集群。
