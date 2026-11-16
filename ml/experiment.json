@@ -1,0 +1,20 @@
+{
+  "version": "m3-v1",
+  "seed": 42,
+  "warmup_month": "2024-01",
+  "train_months": ["2024-02", "2024-03", "2024-04"],
+  "validation_month": "2024-05",
+  "test_month": "2024-06",
+  "evaluation_history_cutoff": "2024-04",
+  "smoothing_strength": 100.0,
+  "baseline_min_support": 100,
+  "baseline_history_months": ["2024-02", "2024-03", "2024-04"],
+  "logistic_candidates": [{"regParam": 0.01}, {"regParam": 0.1}],
+  "logistic_fixed": {"maxIter": 40, "elasticNetParam": 0.0, "standardization": true},
+  "forest_candidates": [{"numTrees": 32, "maxDepth": 5}, {"numTrees": 32, "maxDepth": 7}],
+  "forest_fixed": {"maxBins": 512, "minInstancesPerNode": 100, "maxMemoryInMB": 128, "subsamplingRate": 1.0, "featureSubsetStrategy": "4", "bootstrap": true},
+  "main_metric": "PR-AUC (sklearn trapezoidal area under the full precision-recall curve)",
+  "threshold_rule": "maximum validation F1; choose highest threshold on exact ties; apply score >= threshold",
+  "reliability_bins": 10,
+  "pilot": {"train_rows_target": 20000, "validation_rows_target": 5000, "candidate_index": 0, "used_for_model_selection": false}
+}

@@ -107,3 +107,20 @@ bash scripts/stop_cluster.sh
 代码、方案、测试和依赖锁定文件适合版本管理。数据、日志、数据库、运行环境和密钥由`.gitignore`排除。公开结果将另行导出脱敏的小型摘要。教师原始文件与个人课程信息不进入仓库。
 
 目前没有指定开源许可证；上传GitHub与授予开源许可是两件事。数据和地图素材的来源与许可单独记录。不提交密码或令牌。发布前确认仓库名称、可见性及暂存文件。
+
+## M3 模型实验
+
+B0至B3已完成，详见[模型验收](docs/milestone_m3.md)和[实验协议](docs/m3_protocol.md)。六月601272条评分保存在artifacts/predictions.sqlite，小型结果在results/m3。P3/P4页面将在M4接入。
+
+复现时先启动集群，再依次运行：
+
+```bash
+bash scripts/run_ml.sh prepare
+bash scripts/run_ml.sh pilot
+bash scripts/run_ml.sh formal
+bash scripts/run_ml.sh export
+python scripts/verify_ml.py
+python scripts/report_m3.py
+```
+
+formal复用同配置已完成候选；更改实验配置应使用新版本。绘图脚本scripts/plot_m3.py使用Matplotlib，可选输出PNG/SVG，不参与模型训练。

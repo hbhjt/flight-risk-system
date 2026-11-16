@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "source": "exported SQLite probabilities",
+  "test_rows": 601272,
+  "test_positives": 149945,
+  "date_range": [
+    "2024-06-01",
+    "2024-06-30"
+  ],
+  "historical_cutoff": "2024-04",
+  "trial_counts": {
+    "B0": 1,
+    "B1": 2,
+    "B2": 2,
+    "B3": 2
+  },
+  "models": {
+    "B0": {
+      "passed": true,
+      "max_metric_difference": 0.0
+    },
+    "B1": {
+      "passed": true,
+      "max_metric_difference": 0.0
+    },
+    "B2": {
+      "passed": true,
+      "max_metric_difference": 0.0
+    },
+    "B3": {
+      "passed": true,
+      "max_metric_difference": 0.0
+    }
+  }
+}
