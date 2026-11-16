@@ -1,0 +1,22 @@
+{
+  "snapshot_utc": "2026-11-16T10:55:21.690950+00:00",
+  "sources": {
+    "airports.csv": {
+      "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/main/airports.csv",
+      "sha256": "9d6a27f0a3067364cd92ea49589c3f515d0330c3aa5ff30e98b007cbfabd05df"
+    },
+    "states.geojson": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_1_states_provinces.geojson",
+      "sha256": "0067dec6a2c4f9c7a644bf7a9a46163d8d881595953326d0c67d89934190aefe"
+    },
+    "ourairports-license.txt": {
+      "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/main/LICENSE",
+      "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e"
+    }
+  },
+  "licenses": {
+    "airports": "Unlicense",
+    "basemap": "Public domain; https://www.naturalearthdata.com/about/terms-of-use/"
+  },
+  "note": "Current geography snapshot used only for historical visualization; not historical feature inputs"
+}

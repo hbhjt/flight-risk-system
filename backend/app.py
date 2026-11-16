@@ -2,21 +2,35 @@
 import json
 import os
 import sqlite3
+from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.staticfiles import StaticFiles
 
 
 def create_app(database=None):
-    app = FastAPI(title="Flight Risk Analytics", version="0.1.0")
+    app = FastAPI(title="Flight Risk Analytics", version="0.2.0")
     path = Path(database or os.environ.get("FLIGHT_DB", "artifacts/flight.sqlite"))
+
+    @lru_cache(maxsize=2)
+    def memory_snapshot(version):
+        # Immutable published databases fit in memory; load once per ETL version.
+        # This removes NTFS random page reads from every interactive query.
+        memory = sqlite3.connect(":memory:", check_same_thread=False)
+        disk = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
+        try:
+            disk.backup(memory)
+        finally:
+            disk.close()
+        memory.row_factory = sqlite3.Row
+        memory.execute("PRAGMA temp_store=MEMORY")
+        return memory
 
     def connect():
         if not path.is_file():
             raise HTTPException(503, "Data not generated; run the Spark ETL first")
-        db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
-        db.row_factory = sqlite3.Row
-        return db
+        return memory_snapshot(path.stat().st_mtime_ns)
 
     def filters(month, carrier, origin):
         clauses, values = [], []
@@ -36,6 +50,43 @@ def create_app(database=None):
         return result
 
     sums = ", ".join(f"SUM({name}) AS {name}" for name in ["planned", "eligible", "delayed", "cancelled", "diverted", "arr_delay_sum", "arr_delay_count"])
+
+    @lru_cache(maxsize=64)
+    def dashboard_data(version, month, carrier, origin, dest, hour):
+        clauses, values = [], []
+        for key, value in [("month", month), ("carrier", carrier), ("origin", origin), ("dest", dest), ("dep_hour", hour)]:
+            if value is not None:
+                clauses.append(f"{key} = ?")
+                values.append(value)
+        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        with connect() as db:
+            def group(dimensions, order=None, limit=None):
+                columns = ", ".join(dimensions)
+                # A scan avoids millions of non-covering index lookups on WSL/NTFS.
+                # Filters are applied within the same SQL query before aggregation.
+                sql = f"SELECT {columns}, {sums} FROM aggregates NOT INDEXED" + where + f" GROUP BY {columns}"
+                sql += " ORDER BY " + (order or columns)
+                if limit:
+                    sql += f" LIMIT {int(limit)}"
+                return [metrics(row) for row in db.execute(sql, values)]
+            result = {"summary": metrics(db.execute("SELECT " + sums + " FROM aggregates" + where, values).fetchone()),
+                      "trend": group(["month"]), "carriers": group(["carrier"], "planned DESC"),
+                      "airports": group(["origin"], "planned DESC"),
+                      "heatmap": group(["weekday", "dep_hour"]), "hours": group(["dep_hour"]),
+                      "routes": group(["origin", "dest"], "planned DESC", 20)}
+            result["scope"] = {"months": [r[0] for r in db.execute("SELECT DISTINCT month FROM aggregates ORDER BY month")],
+                               "filters": {"month": month, "carrier": carrier, "origin": origin, "dest": dest, "hour": hour}}
+            return result
+
+    @app.get("/api/dashboard")
+    def dashboard(month: str | None = Query(None, pattern=r"^2024-0[1-6]$"),
+                  carrier: str | None = Query(None, pattern=r"^[A-Z0-9()]{2,6}$"),
+                  origin: str | None = Query(None, pattern=r"^[A-Z]{3}$"),
+                  dest: str | None = Query(None, pattern=r"^[A-Z]{3}$"),
+                  hour: int | None = Query(None, ge=0, le=23)):
+        if not path.is_file():
+            raise HTTPException(503, "Data not generated; run the Spark ETL first")
+        return dashboard_data(path.stat().st_mtime_ns, month, carrier, origin, dest, hour)
 
     @app.get("/api/health")
     def health():
@@ -72,6 +123,9 @@ def create_app(database=None):
             rows = db.execute(f"SELECT {dimension} AS name, {sums} FROM aggregates" + where + f" GROUP BY {dimension} ORDER BY {dimension}", values).fetchall()
         return {"dimension": dimension, "data": [metrics(row) for row in rows]}
 
+    build = Path(__file__).resolve().parents[1] / "frontend" / "dist"
+    if build.is_dir():
+        app.mount("/", StaticFiles(directory=build, html=True), name="frontend")
     return app
 
 

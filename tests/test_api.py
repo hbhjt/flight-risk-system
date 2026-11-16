@@ -31,3 +31,9 @@ def test_aggregation_and_filters(tmp_path):
     assert client.get("/api/overview?origin='OR1=1").status_code == 422
     assert client.get("/api/breakdown/invalid").status_code == 422
     assert len(client.get("/api/breakdown/carrier").json()["data"]) == 2
+    dashboard = client.get("/api/dashboard").json()
+    assert dashboard["summary"]["delay_rate"] == 12 / 28
+    assert len(dashboard["routes"]) == 2
+    assert client.get("/api/dashboard?hour=8").json()["summary"]["planned"] == 10
+    assert client.get("/api/dashboard?origin=AAA&dest=DDD").json()["summary"]["delay_rate"] is None
+    assert client.get("/api/dashboard?hour=24").status_code == 422

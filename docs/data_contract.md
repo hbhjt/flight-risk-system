@@ -26,7 +26,7 @@
 
 粒度：month × carrier × origin × dest × weekday × dep_hour。保存 planned、eligible、delayed、cancelled、diverted、arr_delay_sum、arr_delay_count。API汇总这些可加量后计算率与均值。空分母返回null，前端显示无有效样本，不能显示0%。
 
-第一版ETL每次发布一个月到应用数据库，运行另一个月份会替换该数据库。六个月合并发布在M2完成前必须加入，不将连续单月运行误认为已经累计全部数据。
+单月ETL默认替换指定应用数据库。正式半年发布使用run_all_months.sh将月度产物分别保存，再由merge_months.py验证六个月范围并原子合并。重复合并不追加重复记录，旧发布数据在新版本完成前保持可查询。
 
 ## 模型契约
 

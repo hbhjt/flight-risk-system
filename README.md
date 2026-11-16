@@ -4,7 +4,7 @@
 
 ## 当前进度
 
-方案已定稿：[最终方案](docs/final_plan.md)。已获取六个月3461319条官方记录；单月HDFS→Spark Standalone→SQLite→API主链已跑通。尚未完成四页面、模型实验与课程交付材料。详见[实施清单](docs/implementation_plan.md)。
+方案已定稿：[最终方案](docs/final_plan.md)。六个月3461319条官方记录均已通过HDFS→Spark Standalone→SQLite→API处理与独立数量核对。P1运行驾驶舱和P2航线探索已实现。P3/P4、模型实验与课程材料仍待完成。详见[实施清单](docs/implementation_plan.md)及[M2验收](docs/milestone_m2.md)。
 
 ## 环境
 
@@ -58,7 +58,27 @@ bash scripts/start_cluster.sh
 bash scripts/run_etl.sh 2024-01
 ```
 
-安装只会首次格式化项目自己的全新NameNode目录；不会自动清理HDFS或重新格式化已有元数据。再次安装可复用依赖。当前单月ETL会替换应用数据库，不会自动合并六个月。
+安装只会首次格式化项目自己的全新NameNode目录；不会自动清理HDFS或重新格式化已有元数据。再次安装可复用依赖。单月ETL会替换指定数据库。发布正式半年数据请执行：
+
+```bash
+bash scripts/run_all_months.sh
+```
+
+该脚本保留六个月独立产物，跳过已有月度作业，并验证月份后原子合并，重复合并不追加重复记录。若需要重新处理某月，显式运行`bash scripts/run_etl.sh 2024-02 artifacts/months/2024-02.sqlite`，再执行`python scripts/merge_months.py`。
+
+## 交互式网页
+
+前端使用Vue3、Vite、ECharts，Node要求见package.json及Vite支持范围，已在Node24实测。Windows仓库根目录：
+
+```powershell
+python -m ingestion.map_assets
+npm.cmd ci --prefix frontend
+npm.cmd run build --prefix frontend
+```
+
+地图快照已随仓库保存，正常启动无需重新下载。重新生成时同步检查地图许可和sources.json。前端构建后再启动下方后端，即可在[本地工作台](http://localhost:18000/)使用两个页面。地图与字体不依赖外部CDN。
+
+开发调试可另开终端执行`npm.cmd run dev --prefix frontend`，使用15173端口并将/api代理到18000。正式演示使用后端提供的构建版本，只需一个服务。
 
 ## 查询服务
 
@@ -68,7 +88,7 @@ WSL仓库根目录执行：
 /mnt/d/flight-risk-runtime/venv/bin/python -m uvicorn backend.app:app --host 127.0.0.1 --port 18000
 ```
 
-访问[API文档](http://localhost:18000/docs)、[统计接口](http://localhost:18000/api/overview)、[ATL筛选](http://localhost:18000/api/overview?origin=ATL)。数据不存在时统计接口返回503，不生成演示数值。
+访问[网页](http://localhost:18000/)、[API文档](http://localhost:18000/docs)、[统计接口](http://localhost:18000/api/overview)、[ATL筛选](http://localhost:18000/api/overview?origin=ATL)。数据不存在时统计接口返回503，不生成演示数值。查询库约92MB；服务首次加载内存快照和首次全局聚合可能等待数秒，后续查询按版本缓存。
 
 ## 验证与关闭
 
@@ -76,6 +96,7 @@ WSL仓库根目录执行：
 source infrastructure/runtime.sh
 python -m pytest -q
 FLIGHT_SPARK_TESTS=1 python -m pytest -q
+python scripts/verify_all.py
 bash scripts/stop_cluster.sh
 ```
 
