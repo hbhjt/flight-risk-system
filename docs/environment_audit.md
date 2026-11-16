@@ -13,7 +13,7 @@
 | WSL | 已有Ubuntu22.04，Python3.10.12；初检无Java/HDFS/Spark |
 | WSL资源 | 可见约7.8GB内存，2GB swap，初检空闲约7.3GB |
 | 本地Git | 可用，仓库已在本项目目录初始化 |
-| GitHub | 已通过连接验证账号hbhjt；尚未确定目标仓库和可见性，未发布 |
+| GitHub | 已核实hbhjt/flight-risk-system私有仓库，Windows Git凭据可访问；状态以实际推送核验为准 |
 
 ## 隔离策略
 
@@ -24,3 +24,5 @@
 网络已实际获取六个月BTS ZIP并完成CRC/行数检查。Hadoop归档经镜像获取，与Apache官方SHA512一致。JRE从Adoptium获取，下载来源与本地哈希记录在隔离运行目录downloads.json中。WSL提示现有localhost代理未镜像，直接公网访问可用，未修改WSL全局网络配置。
 
 安装中处理的真实问题：PySpark的PyPI包不包含start-master/start-worker脚本，改为使用spark-class启动Master/Worker；Spark堆大小通过SPARK_DAEMON_MEMORY设置；NTFS小文件解压较慢，跳过归档内HTML文档，保留全部运行库。所有项目服务只用专属端口。
+
+M4补充：隔离Linux Node22.14完成npm ci和生产构建。浏览器及其共享库仅放在D:/flight-risk-runtime，未修改其他项目环境。

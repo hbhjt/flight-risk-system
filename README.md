@@ -4,7 +4,7 @@
 
 ## 当前进度
 
-方案已定稿：[最终方案](docs/final_plan.md)。六个月3461319条官方记录均已通过HDFS→Spark Standalone→SQLite→API处理与独立数量核对。四个页面、B0至B3真实模型实验及CSV/Parquet格式实验均已实现。课程交付材料正在整理。详见[实施清单](docs/implementation_plan.md)及[M2验收](docs/milestone_m2.md)。
+方案已定稿：[最终方案](docs/final_plan.md)。六个月3461319条官方记录均已通过HDFS→Spark Standalone→SQLite→API处理与独立数量核对。四个页面、B0至B3真实模型实验及CSV/Parquet格式实验均已实现。报告、PPT、真实录屏和讲解稿已生成，待补真实成员信息。详见[实施清单](docs/implementation_plan.md)及[M2验收](docs/milestone_m2.md)。
 
 ## 环境
 
@@ -136,3 +136,11 @@ bash scripts/run_benchmark.sh
 真实三轮CSV查询中位数1.7755秒，Parquet为0.7055秒。两者均为相同5列、相同3461319行、相同9327组聚合，结果SHA256一致。该实验只清除Spark缓存，未清除操作系统/HDFS缓存，存储字节数也不等于查询扫描字节数。详见[集成验收](docs/milestone_m4.md)、[原始实验记录](results/engineering/benchmark.json)及[API契约](docs/api_contract.md)。
 
 后端无需在线启动Spark即可演示已发布的数据与评分；重新生成数据、训练模型或重跑格式实验时需要启动集群。
+
+## 课程交付材料
+
+[交付目录](delivery/README.md)包含12页报告、15页可编辑PPT、真实无配音视频和讲解稿。封面与贡献页需填写实际组员资料，不应直接把空白版本作为最终个人提交。启动已发布演示：`bash scripts/start_demo.sh`，Windows可运行`scripts/start_demo.ps1`。
+
+代码与材料打包：`python scripts/package_delivery.py`；包含本地已发布数据库与前端构建的演示包：`python scripts/package_delivery.py --with-data`。两种ZIP均不提交GitHub，包内含文件清单和校验和。
+
+目标远程仓库为[hbhjt/flight-risk-system](https://github.com/hbhjt/flight-risk-system)，私有可见性。材料、代码和小型实验结果可随仓库更新，原始数据、模型大文件和数据库仍被忽略。
