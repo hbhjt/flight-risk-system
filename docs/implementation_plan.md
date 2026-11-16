@@ -20,7 +20,7 @@
 - 隔离Linux环境5项测试通过，包括API、ZIP导入与Spark清洗边界；存在依赖弃用提示，未导致失败。
 - Hadoop3.3.6镜像归档已与Apache官方SHA512核对一致；HDFS1个DataNode及Spark1个Worker成功运行。
 - Standalone作业app-20261116054417-0000的清洗数量与local一致，真实输入输出均为hdfs://路径。
-- GitHub账号hbhjt的私有flight-risk-system仓库已核实存在。Windows Git凭据可用，保留已有远程提交；本轮更新推送后另行核验。
+- GitHub账号hbhjt的私有flight-risk-system仓库已核实存在。Windows Git凭据可用，保留已有远程提交；M3、M4及材料提交53a81c0已实际推送，远程main与本地提交一致。
 
 ## 下一步验收门槛
 

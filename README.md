@@ -143,4 +143,4 @@ bash scripts/run_benchmark.sh
 
 代码与材料打包：`python scripts/package_delivery.py`；包含本地已发布数据库与前端构建的演示包：`python scripts/package_delivery.py --with-data`。两种ZIP均不提交GitHub，包内含文件清单和校验和。
 
-目标远程仓库为[hbhjt/flight-risk-system](https://github.com/hbhjt/flight-risk-system)，私有可见性。材料、代码和小型实验结果可随仓库更新，原始数据、模型大文件和数据库仍被忽略。
+当前代码和交付材料已推送并通过远程main提交SHA核验。远程仓库为[hbhjt/flight-risk-system](https://github.com/hbhjt/flight-risk-system)，私有可见性。材料、代码和小型实验结果可随仓库更新，原始数据、模型大文件和数据库仍被忽略。

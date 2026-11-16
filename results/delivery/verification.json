@@ -1,0 +1,31 @@
+{
+  "verified_at_utc": "2026-11-16T14:45:43.973786+00:00",
+  "report_pages": 12,
+  "deck_slides": 15,
+  "video_seconds": 68.44,
+  "video_dimensions": [
+    1366,
+    768
+  ],
+  "video_audio": false,
+  "material_files": {
+    "flight-risk-report.pdf": {
+      "bytes": 749071,
+      "sha256": "36b5c94720f65da3545003ae0c6b6a467aafce51cd2ff20ad4d5644d3b2902a7"
+    },
+    "flight-risk-defense.pptx": {
+      "bytes": 556870,
+      "sha256": "90fca780c5ede6f2494c9d49794094722dce930c22f82e82fe42ba22004542bb"
+    },
+    "flight-risk-demo.mp4": {
+      "bytes": 1211432,
+      "sha256": "0ec571b1d55b955c5a8d7f93cef1dea9508495effe6d541ca1082c6a8ce6b14e"
+    }
+  },
+  "github_repository": "hbhjt/flight-risk-system",
+  "visibility": "private",
+  "verified_material_commit": "53a81c0dd5b495fc3891ef09ada695f6490d2daa",
+  "remote_check": "native Git push succeeded; ls-remote main equals material commit",
+  "personal_details_complete": false,
+  "teacher_submission_performed": false
+}

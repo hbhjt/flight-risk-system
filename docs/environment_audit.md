@@ -13,7 +13,7 @@
 | WSL | 已有Ubuntu22.04，Python3.10.12；初检无Java/HDFS/Spark |
 | WSL资源 | 可见约7.8GB内存，2GB swap，初检空闲约7.3GB |
 | 本地Git | 可用，仓库已在本项目目录初始化 |
-| GitHub | 已核实hbhjt/flight-risk-system私有仓库，Windows Git凭据可访问；状态以实际推送核验为准 |
+| GitHub | 已核实hbhjt/flight-risk-system私有仓库，Windows Git凭据可访问；53a81c0材料提交已推送且远程main SHA一致 |
 
 ## 隔离策略
 
