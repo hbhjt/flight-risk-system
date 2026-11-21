@@ -1,0 +1,82 @@
+/* Paper flight briefs sit above the darker map and instrument panels. */
+:root {
+  --paper: #f0eddf;
+  --ink: #122d35;
+  --paper-rule: #c5c6b7;
+  --teal-ink: #086865;
+}
+.eyebrow { color: #9caec4; font-size: 11px; letter-spacing: .08em }
+.eyebrow span { color: #586f86; padding: 0 .55em }
+.page-header h1 { font-weight: 650; font-size: clamp(26px, 2.2vw, 38px); line-height: 1.2 }
+.page-header p, .panel-heading p { color: #a2b4cb; font-size: 12px }
+.panel h2 { font-weight: 600; font-size: 15px }
+.brief-sheet {
+  color-scheme: light; color: var(--ink); background: var(--paper);
+  border-radius: 7px; display: grid; grid-template-columns: 1.2fr 1fr;
+  gap: clamp(20px, 3vw, 60px); align-items: center;
+  padding: 21px clamp(20px, 2.2vw, 36px); margin-bottom: 16px;
+  border-top: 3px solid #70c6ba; font-variant-numeric: tabular-nums;
+}
+.brief-story { min-width: 0 }
+.brief-kicker, .ledger-heading {
+  display: flex; align-items: baseline; gap: 15px; font-size: 12px;
+}
+.brief-kicker { color: var(--teal-ink); font-weight: 700 }
+.brief-kicker span, .ledger-heading span, .brief-story .brief-foot { color: #526266; font-weight: 400; font-size: 11px }
+.brief-story h2 { margin: 9px 0 7px; font-size: clamp(20px,1.6vw,30px); font-weight: 550; line-height: 1.25 }
+.brief-story h2 b { font-family: Consolas, "Microsoft YaHei", monospace; letter-spacing: -.035em; font-size: 1.16em }
+.brief-story h2 small { color: var(--teal-ink); font-size: .75em }
+.brief-story p { color: #384e52; font-size: 13px; line-height: 1.65 }
+.brief-story strong { color: var(--ink); font-weight: 700 }
+.brief-link { margin-top: 10px; padding: 4px 0; background: none; border: none; color: var(--teal-ink); font-size: 13px; font-weight: 650 }
+.brief-link span { padding-left: 5px }
+.brief-link:hover { text-decoration: underline }
+.brief-sheet :focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 2px }
+.ledger-heading { justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #7d918e }
+.ledger-row { display: grid; grid-template-columns: 38px 1fr 62px 46px; gap: 12px; width: 100%; padding: 6px 0; align-items: center; text-align: right; background: none; border: none; border-bottom: 1px solid var(--paper-rule); color: var(--ink); font-size: 13px }
+.ledger-row b { text-align: left; font: 700 15px Consolas, monospace }
+.ledger-row span { color: #455b60 }
+.ledger-row i { height: 5px; background: #d7dacc; display: block }
+.ledger-row u { height: 100%; display: block; background: #5c8e88 }
+.ledger-row:first-of-type u { background: var(--teal-ink) }
+.ledger-row:hover { background: #e1e6d9 }
+.band-row { display: grid; grid-template-columns: minmax(110px,1fr) auto minmax(105px,1fr); gap: 12px; align-items: center; border-bottom: 1px solid var(--paper-rule); padding: 8px 0; text-align: right; font-size: 13px }
+.band-row select { width: fit-content; font-size: 12px; color: var(--ink); background: #fbfbf2; border: 1px solid #a6b4ab; border-radius: 4px; padding: 4px }
+.band-row strong { color: var(--teal-ink); font-size: 17px }
+.brief-story .gap-line { margin: 6px 0 }
+.gap-line strong { color: var(--teal-ink); font-size: 1.5em }
+.kpi { background: #111d2e }
+.kpi strong { font-family: Consolas, "Microsoft YaHei", monospace; font-weight: 600 }
+.kpi > span, .kpi p { color: #adbed2 }
+.model-choice { color: #8edce7; text-decoration: underline; text-underline-offset: 3px; padding: 4px }
+.threshold-panel { padding: 20px 22px; border-left: 3px solid #6ebcb1; margin: 0 0 18px }
+.threshold-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px }
+.threshold-panel p { font-size: 12px; color: #a6b8cc }
+.threshold-options { display: flex; flex-wrap: wrap; gap: 5px }
+.threshold-options button { color: #bed0de; background: #14263a; border: 1px solid #3f566b; border-radius: 4px; padding: 6px 10px; font-size: 12px }
+.threshold-options button[aria-pressed="true"] { background: #a9ded2; border-color: #a9ded2; color: #113831; font-weight: 700 }
+.threshold-numbers { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 15px 0 }
+.threshold-numbers > div { padding-top: 9px; border-top: 1px solid #34475b; min-width: 0 }
+.threshold-numbers span, .threshold-numbers small { display: block; font-size: 12px; color: #afc1d3 }
+.threshold-numbers strong { display: block; padding: 5px 0; font: 600 clamp(21px,2vw,32px) Consolas,monospace; color: #e6f1ef }
+.threshold-numbers small { font-size: 11px }
+@media (max-width: 1050px) {
+  .brief-sheet { grid-template-columns: 1fr 1fr; gap: 18px }
+  .band-row { grid-template-columns: auto auto; gap: 5px }
+  .band-row span { grid-column: 1 / -1 }
+}
+@media (max-width: 700px) {
+  .brief-sheet { grid-template-columns: 1fr; gap: 16px; padding: 16px }
+  .band-row { grid-template-columns: auto auto 1fr; gap: 5px }
+  .band-row span { grid-column: auto }
+  .sidebar { flex-wrap: wrap; padding: 12px 14px; gap: 12px }
+  .sidebar nav { width: 100%; display: grid; grid-template-columns: repeat(4,1fr); gap: 3px }
+  .sidebar nav button { text-align: center; padding: 9px 2px; font-size: 12px }
+  .sidebar .brand small { display: inline; margin-left: 10px }
+  .sidebar .nav-icon { display: none }
+  .filter-bar { gap: 9px; padding: 11px }
+  .threshold-numbers { grid-template-columns: repeat(2,1fr) }
+  .threshold-panel { padding: 16px }
+  .main-grid, .risk-content .main-grid, .lower-grid { grid-template-columns: minmax(0,1fr) }
+  .page-header { margin-bottom: 16px }
+}

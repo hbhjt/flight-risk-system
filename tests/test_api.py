@@ -35,5 +35,11 @@ def test_aggregation_and_filters(tmp_path):
     assert dashboard["summary"]["delay_rate"] == 12 / 28
     assert len(dashboard["routes"]) == 2
     assert client.get("/api/dashboard?hour=8").json()["summary"]["planned"] == 10
+    playback = client.get("/api/dashboard?hour=8").json()
+    assert [r["dep_hour"] for r in playback["hours"]] == [8]
+    assert [r["dep_hour"] for r in playback["comparison_hours"]] == [8, 9]
+    no_hour_match = client.get("/api/dashboard?origin=AAA&dest=BBB&hour=9").json()
+    assert no_hour_match["summary"]["planned"] == 0
+    assert [r["planned"] for r in no_hour_match["comparison_hours"]] == [10]
     assert client.get("/api/dashboard?origin=AAA&dest=DDD").json()["summary"]["delay_rate"] is None
     assert client.get("/api/dashboard?hour=24").status_code == 422

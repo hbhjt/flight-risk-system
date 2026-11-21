@@ -25,6 +25,12 @@ async function search(request=++serial){busy.value=true;error.value='';record.va
 async function inspect(reveal=false,request=++serial){busy.value=true;error.value='';try{const row=await api(`/api/risk/flight/${selected.value}?reveal=${reveal}`);if(request===serial)record.value=row}catch(e){if(request===serial)error.value=e.message}finally{if(request===serial)busy.value=false}}
 async function example(id){try{const row=await api('/api/risk/flight/'+id);origin.value=row.Origin;dest.value=row.Dest;carrier.value=row.Reporting_Airline;date.value=row.FlightDate;await options();selected.value=id;await inspect()}catch(e){error.value=e.message}}
 onMounted(async()=>{await options();try{examples.value=(await api('/api/risk/examples')).cases}catch(e){error.value=e.message}})
+const outcomeName = computed(() => {
+ const flight = record.value
+ if (flight?.actual_delayed === undefined) return ''
+ if (flight.actual_delayed) return flight.predicted_delayed ? '命中延误（TP）' : '漏报延误（FN）'
+ return flight.predicted_delayed ? '误报延误（FP）' : '正确排除（TN）'
+})
 const comparison=computed(()=>({textStyle:{color:'#9aaec8'},grid:{left:100,right:35,top:20,bottom:30},xAxis:{type:'value',min:0,max:100,axisLabel:{formatter:'{value}%'},splitLine:{lineStyle:{color:'#26364d'}}},yAxis:{type:'category',data:['历史率 B0','逻辑回归 B1','基础森林 B2','增强森林 B3'],axisTick:{show:false}},series:[{type:'bar',barMaxWidth:22,label:{show:true,position:'right',formatter:'{c}%',color:'#cbdcee'},data:['B0','B1','B2','B3'].map(k=>({value:+((record.value?.['score_'+k]||0)*100).toFixed(1),itemStyle:{color:k===record.value?.model?'#f6b44d':'#38cfe8'}}))}]}))
 </script>
 <template>
@@ -41,7 +47,7 @@ const comparison=computed(()=>({textStyle:{color:'#9aaec8'},grid:{left:100,right
   <div class="main-grid"><section class="panel score-panel"><div class="eyebrow">HISTORICAL RISK REPLAY</div><h2>{{record.Origin}} → {{record.Dest}} <span class="pill">{{record.Reporting_Airline}}{{record.Flight_Number_Reporting_Airline}}</span></h2><div class="risk-number">{{pct(record.score)}}</div><p>模型估计分数 · {{record.model}} / {{record.version}}</p><div class="decision">{{record.predicted_delayed?'达到延误判定阈值':'低于延误判定阈值'}} <span>验证集阈值 {{pct(record.threshold)}}</span></div><p>{{record.FlightDate}} · 计划出发 {{hhmm(record.CRSDepTime)}}（出发机场当地时间）</p><p class="risk-explain">此分数来自离线模型，未进行额外概率校准。它表达条件风险，不能保证航班实际结果。</p></section>
    <section class="panel"><div class="panel-heading"><div><h2>相同航班的模型比较</h2><p>四组模型共享测试样本 · 阈值分别在验证集确定</p></div></div><Chart :option="comparison" label="同一航班四个模型的风险分数"/></section></div>
   <div class="kpi-grid"><article class="kpi"><span>航线历史参考（平滑率）</span><strong>{{pct(record.historical_reference)}}</strong><p>2024 年 1—4 月 · {{record.hist_route_count.toLocaleString()}} 个有效历史样本</p></article><article class="kpi"><span>出发机场历史支持</span><strong>{{record.hist_origin_count.toLocaleString()}}</strong><p>历史延误率 {{pct(record.hist_origin_rate)}}</p></article><article class="kpi"><span>航空公司历史支持</span><strong>{{record.hist_carrier_count.toLocaleString()}}</strong><p>历史延误率 {{pct(record.hist_carrier_rate)}}</p></article><article class="kpi"><span>计划属性</span><strong>{{record.CRSElapsedTime}}<small>分钟</small></strong><p>距离 {{record.Distance}} 英里 · 支持数不是置信度</p></article></div>
-  <section class="panel outcome"><div><h2>真实结果复盘</h2><p>先查看风险判断，再展开该历史航班的实际标签。</p></div><button v-if="record.actual_delayed===undefined" class="action" @click="inspect(true)">展开实际结果</button><strong v-else :class="record.actual_delayed?'amber':'cyan'">{{record.actual_delayed?'实际到达延误 ≥15 分钟':'实际到达延误 <15 分钟'}} · {{record.actual_delayed===record.predicted_delayed?'本例判断一致':'本例判断不一致'}}</strong></section>
+  <section class="panel outcome"><div><h2>真实结果复盘</h2><p>先查看风险判断，再展开该历史航班的实际标签。</p></div><button v-if="record.actual_delayed===undefined" class="action" @click="inspect(true)">展开实际结果</button><strong v-else :class="record.actual_delayed?'amber':'cyan'">{{record.actual_delayed?'实际到达延误 ≥15 分钟':'实际到达延误 <15 分钟'}} · {{outcomeName}}</strong></section>
  </div>
  <div v-else-if="!busy&&!error" class="empty">当前条件没有已评分记录，请调整条件。</div>
  <section class="panel examples"><h2>真实航班示例</h2><p>按固定规则从四类判断结果中选取，供复盘使用，不代表总体表现。</p><div><button v-for="(row,i) in examples" :key="row.flight_id" @click="example(row.flight_id)">{{row.origin}} → {{row.dest}} <small>{{row.date}} · 案例 {{i+1}}</small></button></div></section>

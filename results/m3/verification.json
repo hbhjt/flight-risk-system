@@ -17,19 +17,111 @@
   "models": {
     "B0": {
       "passed": true,
-      "max_metric_difference": 0.0
+      "max_metric_difference": 0.0,
+      "operating_points": [
+        {
+          "threshold": 0.2,
+          "tp": 65142,
+          "fp": 147549,
+          "fn": 84803,
+          "tn": 303778
+        },
+        {
+          "threshold": 0.35,
+          "tp": 1265,
+          "fp": 2239,
+          "fn": 148680,
+          "tn": 449088
+        },
+        {
+          "threshold": 0.5,
+          "tp": 306,
+          "fp": 236,
+          "fn": 149639,
+          "tn": 451091
+        }
+      ]
     },
     "B1": {
       "passed": true,
-      "max_metric_difference": 0.0
+      "max_metric_difference": 0.0,
+      "operating_points": [
+        {
+          "threshold": 0.2,
+          "tp": 85748,
+          "fp": 148218,
+          "fn": 64197,
+          "tn": 303109
+        },
+        {
+          "threshold": 0.35,
+          "tp": 3166,
+          "fp": 4286,
+          "fn": 146779,
+          "tn": 447041
+        },
+        {
+          "threshold": 0.5,
+          "tp": 161,
+          "fp": 146,
+          "fn": 149784,
+          "tn": 451181
+        }
+      ]
     },
     "B2": {
       "passed": true,
-      "max_metric_difference": 0.0
+      "max_metric_difference": 0.0,
+      "operating_points": [
+        {
+          "threshold": 0.2,
+          "tp": 85667,
+          "fp": 149676,
+          "fn": 64278,
+          "tn": 301651
+        },
+        {
+          "threshold": 0.35,
+          "tp": 109,
+          "fp": 105,
+          "fn": 149836,
+          "tn": 451222
+        },
+        {
+          "threshold": 0.5,
+          "tp": 0,
+          "fp": 0,
+          "fn": 149945,
+          "tn": 451327
+        }
+      ]
     },
     "B3": {
       "passed": true,
-      "max_metric_difference": 0.0
+      "max_metric_difference": 0.0,
+      "operating_points": [
+        {
+          "threshold": 0.2,
+          "tp": 89859,
+          "fp": 156277,
+          "fn": 60086,
+          "tn": 295050
+        },
+        {
+          "threshold": 0.35,
+          "tp": 2220,
+          "fp": 3223,
+          "fn": 147725,
+          "tn": 448104
+        },
+        {
+          "threshold": 0.5,
+          "tp": 694,
+          "fp": 837,
+          "fn": 149251,
+          "tn": 450490
+        }
+      ]
     }
   }
 }

@@ -54,26 +54,33 @@ def create_app(database=None, predictions=None, results_dir=None):
     @lru_cache(maxsize=64)
     def dashboard_data(version, month, carrier, origin, dest, hour):
         clauses, values = [], []
-        for key, value in [("month", month), ("carrier", carrier), ("origin", origin), ("dest", dest), ("dep_hour", hour)]:
+        for key, value in [("month", month), ("carrier", carrier), ("origin", origin), ("dest", dest)]:
             if value is not None:
                 clauses.append(f"{key} = ?")
                 values.append(value)
+        day_where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        day_values = tuple(values)
+        if hour is not None:
+            clauses.append("dep_hour = ?")
+            values.append(hour)
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with connect() as db:
-            def group(dimensions, order=None, limit=None):
+            def group(dimensions, order=None, limit=None, keep_all_hours=False):
                 columns = ", ".join(dimensions)
+                query_where, query_values = (day_where, day_values) if keep_all_hours else (where, values)
                 # A scan avoids millions of non-covering index lookups on WSL/NTFS.
                 # Filters are applied within the same SQL query before aggregation.
-                sql = f"SELECT {columns}, {sums} FROM aggregates NOT INDEXED" + where + f" GROUP BY {columns}"
+                sql = f"SELECT {columns}, {sums} FROM aggregates NOT INDEXED" + query_where + f" GROUP BY {columns}"
                 sql += " ORDER BY " + (order or columns)
                 if limit:
                     sql += f" LIMIT {int(limit)}"
-                return [metrics(row) for row in db.execute(sql, values)]
+                return [metrics(row) for row in db.execute(sql, query_values)]
             result = {"summary": metrics(db.execute("SELECT " + sums + " FROM aggregates" + where, values).fetchone()),
                       "trend": group(["month"]), "carriers": group(["carrier"], "planned DESC"),
                       "airports": group(["origin"], "planned DESC"),
                       "heatmap": group(["weekday", "dep_hour"]), "hours": group(["dep_hour"]),
                       "routes": group(["origin", "dest"], "planned DESC", 20)}
+            result["comparison_hours"] = result["hours"] if hour is None else group(["dep_hour"], keep_all_hours=True)
             result["scope"] = {"months": [r[0] for r in db.execute("SELECT DISTINCT month FROM aggregates ORDER BY month")],
                                "filters": {"month": month, "carrier": carrier, "origin": origin, "dest": dest, "hour": hour}}
             return result

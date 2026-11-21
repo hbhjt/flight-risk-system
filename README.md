@@ -137,6 +137,14 @@ bash scripts/run_benchmark.sh
 
 后端无需在线启动Spark即可演示已发布的数据与评分；重新生成数据、训练模型或重跑格式实验时需要启动集群。
 
+## 现场演示
+
+1. 打开运行驾驶舱，机场简报按延误班次排名。选择六月，点击 DFW 进入航线探索，再选 LAX。上午延误 52/193 班，晚间 96/199 班，相差 21.3 个百分点。可切换比较时段或回放单个小时。
+2. 在风险复盘中选择六月已评分航班。先看分数，再展开真实标签，核对命中、误报、漏报或正确排除。
+3. 在实验验证中选 B3，比较发布阈值和演示值 20%。同一测试集上，误报减少 95,068 班，漏报增加 29,134 班。再查看同深度特征验证与相同输入的存储格式对照。
+
+[航线界面](docs/images/brief-route.jpg) · [阈值推演界面](docs/images/brief-threshold.jpg) · [带字幕演示](delivery/flight-risk-demo.mp4) · [答辩操作与口径](delivery/defense-notes.md)
+
 ## 课程交付材料
 
 [交付目录](delivery/README.md)包含12页报告、15页可编辑PPT、真实无配音视频和讲解稿。封面与贡献页需填写实际组员资料，不应直接把空白版本作为最终个人提交。启动已发布演示：`bash scripts/start_demo.sh`，Windows可运行`scripts/start_demo.ps1`。

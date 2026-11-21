@@ -39,7 +39,20 @@ def main():
         differences = {key: abs(recalculated[key]-expected[key]) for key in ["pr_auc", "average_precision", "roc_auc", "precision", "recall", "f1", "brier"]}
         assert max(differences.values()) <= 1e-12, (code, differences)
         assert sum(box["n"] for box in expected["reliability"]) == total
-        reports[code] = {"passed": True, "max_metric_difference": max(differences.values())}
+        # Fixed demonstration settings, independent of test performance. The
+        # published model and validation threshold continue to govern replay.
+        probabilities = np.frombuffer(values, dtype=np.float64)
+        positives = labels == 1
+        scenarios = []
+        for cutoff in (0.20, 0.35, 0.50):
+            alerts = probabilities >= cutoff
+            tp = int(np.count_nonzero(alerts & positives))
+            fp = int(alerts.sum()) - tp
+            fn = int(positives.sum()) - tp
+            scenarios.append({"threshold": cutoff, "tp": tp, "fp": fp,
+                              "fn": fn, "tn": total - tp - fp - fn})
+        reports[code] = {"passed": True, "max_metric_difference": max(differences.values()),
+                         "operating_points": scenarios}
     counts = {code: sum(trial["model"] == code for trial in result["selection"]["trials"]) for code in ["B0", "B1", "B2", "B3"]}
     assert counts == {"B0": 1, "B1": 2, "B2": 2, "B3": 2}
     verification = {"passed": True, "source": "exported SQLite probabilities", "test_rows": total, "test_positives": int(labels.sum()), "date_range": list(dates), "historical_cutoff": "2024-04", "trial_counts": counts, "models": reports}
