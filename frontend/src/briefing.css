@@ -261,37 +261,6 @@
   white-space: nowrap;
 }
 
-/* Experiments Threshold Panel (Preserved Until Experiments Iteration) */
-.model-choice { color: #7dd3fc; text-decoration: underline; text-underline-offset: 3px; padding: 4px; }
-.threshold-panel { padding: 20px 22px; border-left: 3px solid var(--accent); margin: 0 0 18px; }
-.threshold-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
-.threshold-panel p { font-size: 12px; color: var(--text-muted); }
-.threshold-options { display: flex; flex-wrap: wrap; gap: 6px; }
-.threshold-options button {
-  color: var(--text-secondary);
-  background: var(--bg-control);
-  border: 1px solid var(--border-default);
-  border-radius: 5px;
-  padding: 6px 11px;
-  font-size: 12px;
-}
-.threshold-options button[aria-pressed="true"] {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #082032;
-  font-weight: 700;
-}
-.threshold-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 15px 0; }
-.threshold-numbers > div { padding-top: 9px; border-top: 1px solid var(--border-default); min-width: 0; }
-.threshold-numbers span, .threshold-numbers small { display: block; font-size: 12px; color: var(--text-muted); }
-.threshold-numbers strong {
-  display: block;
-  padding: 5px 0;
-  font: 600 clamp(21px, 2vw, 30px) var(--font-mono);
-  color: var(--text-primary);
-}
-.threshold-numbers small { font-size: 11px; }
-
 @media (max-width: 1440px) {
   .cockpit-brief { padding: 11px 16px; gap: 14px 20px; margin-bottom: 12px; }
   .cockpit-story h2 { font-size: 16.5px; }
@@ -315,7 +284,5 @@
   .sidebar nav button { justify-content: center; padding: 8px 4px; font-size: 12px; }
   .sidebar .brand small { display: inline; margin-left: 8px; }
   .sidebar .nav-icon { display: none; }
-  .threshold-numbers { grid-template-columns: repeat(2, 1fr); }
-  .threshold-panel { padding: 16px; }
-  .main-grid, .risk-content .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); }
+  .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); }
 }

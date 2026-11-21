@@ -21,14 +21,14 @@ function changeFromPublished(value) {
 <template>
   <section v-if="scenarios?.length" class="threshold-panel panel" aria-label="预警阈值推演">
     <div class="threshold-heading">
-      <div><h2>提高阈值，会少报多少班？</h2><p>{{model}} · 同一批六月测试航班，分数达到阈值时发出预警。</p></div>
+      <div><h2>预警阈值推演 <span class="pill">{{ model }}</span></h2><p>在同一批六月航班上切换阈值，观察命中、误报和漏报的变化。</p></div>
       <div class="threshold-options" role="group" aria-label="演示阈值">
-        <button :aria-pressed="setting==='published'" @click="setting='published'">发布值 {{pct(current.threshold)}}</button>
+        <button class="published-option" :aria-pressed="setting==='published'" @click="setting='published'">发布值 {{pct(current.threshold)}}</button>
         <button v-for="row in scenarios" :key="row.threshold" :aria-pressed="setting===row.threshold" @click="setting=row.threshold">{{pct(row.threshold)}}</button>
       </div>
     </div>
     <div class="threshold-numbers" aria-live="polite">
-      <div v-for="measure in measures" :key="measure.title"><span>{{measure.title}}</span><strong>{{count(measure.value(matrix))}}</strong><small>{{setting==='published'?'五月验证阈值下的班次':'较发布值 '+changeFromPublished(measure.value)+' 班'}}</small></div>
+      <div v-for="measure in measures" :key="measure.title"><span>{{measure.title}}</span><strong>{{count(measure.value(matrix))}}</strong><small>{{setting==='published'?'发布阈值下的班次':'较发布值 '+changeFromPublished(measure.value)+' 班'}}</small></div>
     </div>
     <p>三档演示值用于观察误报与漏报的取舍。正式指标和单班复盘始终使用五月验证集选定的发布阈值。</p>
   </section>
