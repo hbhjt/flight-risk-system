@@ -143,7 +143,7 @@ bash scripts/run_benchmark.sh
 2. 在风险复盘中选择六月已评分航班。先看分数，再展开真实标签，核对命中、误报、漏报或正确排除。
 3. 在实验验证中选 B3，比较发布阈值和演示值 20%。同一测试集上，误报减少 95,068 班，漏报增加 29,134 班。再查看同深度特征验证与相同输入的存储格式对照。
 
-[航线界面](docs/images/brief-route.jpg) · [阈值推演界面](docs/images/brief-threshold.jpg) · [带字幕演示](delivery/flight-risk-demo.mp4) · [答辩操作与口径](delivery/defense-notes.md)
+[运行总览](docs/images/brief-overview.jpg) · [航线与时段](docs/images/brief-route.jpg) · [阈值推演界面](docs/images/brief-threshold.jpg) · [带字幕演示](delivery/flight-risk-demo.mp4) · [答辩操作与口径](delivery/defense-notes.md)
 
 ## 课程交付材料
 
